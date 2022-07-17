@@ -2,6 +2,7 @@
 # install.packages("tidyverse")
 library(tidyverse)
 
+# getwd()
 username = unlist(strsplit(dirname("~"), "/"))[3]
 root = paste0("/Users/", username, "/workspace/wage-gap/")
 

@@ -30,15 +30,10 @@ linear_model_flex = linear_model_flex.fit()
 print(linear_model_flex.summary())
 
 
-coefs = [linear_model_basic.params[1], linear_model_flex.params[1]]
-
-error_basic = linear_model_basic.params[1] - linear_model_basic.conf_int()[0][1]
-error_flex = linear_model_flex.params[1] - linear_model_flex.conf_int()[0][1]
-errors = [error_basic, error_flex]
-
 coef_df = pd.DataFrame({"varname": ["basic_model", "flexible_model"],
-                        "coef": coefs,
-                        "error": errors})
+                        "coef": [linear_model_basic.params[1], linear_model_flex.params[1]],
+                        "error": [linear_model_basic.params[1] - linear_model_basic.conf_int()[0][1],
+                                  linear_model_flex.params[1] - linear_model_flex.conf_int()[0][1]]})
 
 print(coef_df)
 
