@@ -1,25 +1,21 @@
 
-# install.packages("tidyverse")
 library(tidyverse)
+library(pracma)
 
 # getwd()
 username = unlist(strsplit(dirname("~"), "/"))[3]
-root = paste0("/Users/", username, "/workspace/wage-gap/")
+root = paste0("/Users/", username, "/workspace/wage-gap")
 
 
-df = read.csv(paste0(root, "wage2015_subsample_inference.csv"))
-df
+df = read.csv(paste0(root, "/wage2015_subsample_inference.csv"))
+print(paste("Total number of instances in df (unmodified, raw data):", nrow(df)))
 
 df_scl = subset(df, df["scl"] == 1.0, select=colnames(df))
-nrow(df_scl)
-
-
 df_clg = subset(df, df["clg"] == 1.0, select=colnames(df))
-nrow(df_clg)
+
 
 sample = rbind(df_scl, df_clg)
-nrow(sample)
-print(sample)
+print(paste("Total number of instances in sample (filtered by (scl or clg == 1)):", nrow(sample)))
 
 
 formula_basic = "lwage ~ sex + exp1 + shs + hsg + mw + so + we + occ2 + ind2"
@@ -54,10 +50,6 @@ coefplot = function(lmb, lmf){
 coefplot(linear_model_basic, linear_model_flex)
 
 
-# install.packages("pracma")
-library(pracma)
-
-
 poly_regression = function(df, degree){
   p = polyfit(df$exp1, df$lwage, 4)
   output = data.frame("x" = df$exp1,
@@ -70,7 +62,7 @@ reg_line_scl = poly_regression(df_scl, 4)
 reg_line_clg = poly_regression(df_clg, 4)
 
 
-graph = ggplot() + ylim(c(2, 3.5)) + xlim(c(0, 40)) +
+graph = ggplot() + theme_classic() + ylim(c(2, 3.5)) + xlim(c(0, 40)) +
           labs(x="Years of Experience", y="Log Wage", title="Wage and Experience for College and High School Graduates") +
           theme(plot.title = element_text(hjust = 0.5))
 
@@ -83,10 +75,9 @@ graph = graph + geom_segment(aes(x=5, y=3.27, xend=10, yend=3.15), arrow=arrow(l
 graph = graph + annotate("text", x=10, y=2.57, label=sprintf('Some College'))
 graph = graph + annotate("text", x=5, y=3.3, label=sprintf('College Graduate'))
 graph = graph + scale_color_manual(values=c("Fitted"=rgb(0.2, 0.2, 0.2)))
-graph = graph + theme(legend.position=c(0.9, 0.35), legend.title = element_blank())
+graph = graph + theme(legend.position=c(0.9, 0.35), legend.title = element_blank(), legend.spacing.y = unit(0, "mm"),
+                      panel.border = element_rect(colour = "black", fill=NA), axis.text = element_text(colour = 1, size = 12),
+                      legend.background = element_blank(), legend.box.background = element_rect(colour = "black"))
 graph
 ggsave(path=root, filename="wageexpforclgandscl_r.png", width=900/96, height=600/96, device='png', dpi=100)
-
-
-
 
